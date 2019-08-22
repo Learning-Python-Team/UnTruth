@@ -1,6 +1,6 @@
 # Proposing Algorithm
 
-##### 1) The critical thinking model applied on humans can also be applied to a program in order to write an algorithm that detects a fake news. The program can be written in several parts ensuring that each module carry out only a single step from the steps below.
+The critical thinking model applied on humans can also be applied to a program in order to write an algorithm that detects a fake news. The program can be written in several parts ensuring that each module carry out only a single step from the steps below.
 
 ##### Critical Thinking Model:
 
