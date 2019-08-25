@@ -78,4 +78,4 @@ For answers to common questions about this code of conduct, see
 https://www.contributor-covenant.org/faq
 
 
-Copyright (c) 2019, John Steinhable
+Copyright (c) 2019, The UnTruth team

@@ -1,3 +1,0 @@
-newspaper3k==0.2.8
-nltk==3.4
-google-api-python-client==1.7.11
