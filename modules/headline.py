@@ -24,7 +24,7 @@ class title:
             print("\nCONNECTIION ERROR:There may be a connection problem. Please check if the device is connected to the Internet")
             self.net_con=False #Value update if the program is unable to connenct
             article.title = "Invalid URL/Could not extract title"
-        return article.title
+        return article.title.strip()
 
 
 
