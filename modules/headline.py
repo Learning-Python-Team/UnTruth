@@ -2,6 +2,8 @@ import urllib.request
 from bs4 import BeautifulSoup
 from textblob.classifiers import NaiveBayesClassifier
 from textblob import TextBlob
+import newspaper
+import nltk
 
 class title:
 
@@ -12,16 +14,18 @@ class title:
 
     def extract_headline(self):
         self.net_con=True #Expecting Internet Connection to be working initially
+        
         try:
-            news_page=urllib.request.urlopen(self.news_url)   
-            soup = BeautifulSoup(news_page,'html.parser')
-            headline_in_html=soup.find('h1')
-            headline=headline_in_html.text.strip()
-            return headline
-
+            article = newspaper.Article(self.news_url)
+            article.download()
+            article.parse()
+        
         except urllib.error.URLError:
             print("\nCONNECTIION ERROR:There may be a connection problem. Please check if the device is connected to the Internet")
             self.net_con=False #Value update if the program is unable to connenct
+            article.title = "Invalid URL/Could not extract title"
+        return article.title
+
 
 
     #Adding Training Data
