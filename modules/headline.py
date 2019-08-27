@@ -1,3 +1,4 @@
+import urllib.request
 from textblob.classifiers import NaiveBayesClassifier
 from textblob import TextBlob
 import newspaper
@@ -5,8 +6,16 @@ import newspaper
 class title:
 
     #Initialisations
-    def __init__(self): 
+    def __init__(self):
         self.news_url="https://edition.cnn.com/2019/08/25/politics/trump-g7-boris-johnson-emmanuel-macron/index.html"
+        self.net_con = True
+        try:
+            news_page=urllib.request.urlopen(self.news_url)
+        
+        except urllib.error.URLError:
+            print("\nCONNECTIION ERROR:There may be a connection problem. Please check if the device is connected to the Internet")
+            self.net_con=False
+
 
     def extract_headline(self):
         article = newspaper.Article(self.news_url)
