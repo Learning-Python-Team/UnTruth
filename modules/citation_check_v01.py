@@ -1,4 +1,5 @@
-import newspaper    
+import newspaper
+import re
 def citation_check(article_object):
     
     #Something NLTK stop words. These often aren't real citations. / to remove local files, and ad removal from scraped link.
