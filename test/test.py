@@ -13,5 +13,4 @@ def train_classifier(self,headline):
         print("Incorrect key pressed!")
     pass
 
-
 self.train_classifier(hdln)
