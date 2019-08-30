@@ -1,55 +1,63 @@
-import urllib.request
-from bs4 import BeautifulSoup
-from textblob.classifiers import NaiveBayesClassifier
-from textblob import TextBlob
+import newspaper
+import nltk
+from nltk.classify import NaiveBayesClassifier
+from nltk.classify.util import accuracy
 
 class title:
-
     #Initialisations
+
+
     def __init__(self): 
-        self.news_url="https://edition.cnn.com/2019/08/25/politics/trump-g7-boris-johnson-emmanuel-macron/index.html"
+        self.news_url=input("\nEnter The URL : ")
+        self.pos=[] #Variable to store all positive tokens from positive_headlines.csv file
+        self.neg=[] #Variable to store all negative tokens from negative_headlines.csv file
 
 
     def extract_headline(self):
-        self.net_con=True #Expecting Internet Connection to be working initially
+
         try:
-            news_page=urllib.request.urlopen(self.news_url)   
-            soup = BeautifulSoup(news_page,'html.parser')
-            headline_in_html=soup.find('h1')
-            headline=headline_in_html.text.strip()
-            return headline
+            self.article = newspaper.Article(self.news_url)
+            self.article.download()
+            self.article.parse()
+        
+        except newspaper.article.ArticleException: #List possible errors in case of any exception
+            print("\nCONNECTION/URL ERROR: There may be a problem with your connection or the URL entered may be invalid")
+            article.title = "Invalid URL/Could not extract title"
 
-        except urllib.error.URLError:
-            print("\nCONNECTIION ERROR:There may be a connection problem. Please check if the device is connected to the Internet")
-            self.net_con=False #Value update if the program is unable to connenct
+        return self.article.title.strip()
 
 
-    #Adding Training Data
-    def train_data(self, headline):
-        try:
-            with open('training_data.csv','r') as td:
-                cl=NaiveBayesClassifier(td,format='csv')
-                sentiment=cl.classify(headline)
-                return sentiment
+    #Adding Training/Testing Data
+    def train(self,headline):
 
-        except:
-            if self.net_con==False:
-                pass
-            else:
-                print("\n\nProgram Error")
+        with open("positive_headlines.csv") as file:
+            for sentence in file:
+                self.pos.append([{word: True for word in nltk.word_tokenize(sentence)},'Positive'])
+
+        with open("negative_headlines.csv") as file:
+            for sentence in file:
+                self.neg.append([{word: True for word in nltk.word_tokenize(sentence)},'Negative'])
+
+        training=self.pos[:int(len(self.pos))] + self.neg[:int(len(self.neg))]
+
+        classifier = NaiveBayesClassifier.train(training) #Training
+        sentiment=classifier.classify({word: True for word in nltk.word_tokenize(headline)})
+        return sentiment
 
 
     def headline_category(self,headline,sentiment):
+        print("\nHEADLINE  :",headline.upper())
+        print("SENTIMENT :",sentiment)
+        print("AUTHOR(S) :",*self.article.authors,'\n')
 
-        analyse_headline=TextBlob(headline)
-        print("\n"+"Headline:",headline,"\n")
-        print("Headline Sentiment:",sentiment,"\n\n")
 
     def main(self):
         hdln=self.extract_headline()
-        sntmnt=self.train_data(hdln)
+        sntmnt=self.train(hdln)
+        self.train(hdln)
         self.headline_category(hdln,sntmnt)
-
+        
+        
 if __name__=='__main__':
     do_ya_thing=title()
     do_ya_thing.main()
