@@ -1,27 +1,28 @@
 import urllib.request
+from bs4 import BeautifulSoup
 from textblob.classifiers import NaiveBayesClassifier
 from textblob import TextBlob
-import newspaper
-import sys
 
 class title:
 
     #Initialisations
-    def __init__(self):
+    def __init__(self): 
         self.news_url="https://edition.cnn.com/2019/08/25/politics/trump-g7-boris-johnson-emmanuel-macron/index.html"
-        try:
-            news_page=urllib.request.urlopen(self.news_url)
-        
-        except urllib.error.URLError:
-            print("\nCONNECTIION ERROR:There may be a connection problem. Please check if the device is connected to the Internet")
-            sys.exit()
 
 
     def extract_headline(self):
-        article = newspaper.Article(self.news_url)
-        article.download()
-        article.parse()
-        return article.title.strip()
+        self.net_con=True #Expecting Internet Connection to be working initially
+        try:
+            news_page=urllib.request.urlopen(self.news_url)   
+            soup = BeautifulSoup(news_page,'html.parser')
+            headline_in_html=soup.find('h1')
+            headline=headline_in_html.text.strip()
+            return headline
+
+        except urllib.error.URLError:
+            print("\nCONNECTIION ERROR:There may be a connection problem. Please check if the device is connected to the Internet")
+            self.net_con=False #Value update if the program is unable to connenct
+
 
     #Adding Training Data
     def train_data(self, headline):
@@ -32,7 +33,10 @@ class title:
                 return sentiment
 
         except:
-            print("\n\n Connection/Program Error")
+            if self.net_con==False:
+                pass
+            else:
+                print("\n\nProgram Error")
 
 
     def headline_category(self,headline,sentiment):
