@@ -1,9 +1,6 @@
 import newspaper
 import nltk
 from nltk.classify import NaiveBayesClassifier
-from nltk.classify.util import accuracy
-import urllib.request
-import sys
 
 
 class title:
@@ -13,13 +10,7 @@ class title:
 		self.pos=[] #Variable to store all positive tokens from positive_headlines.csv file
 		self.neg=[] #Variable to store all negative tokens from negative_headlines.csv file
 		
-		try:
-			self.news_page=urllib.request.urlopen(self.news_url)
 		
-		except urllib.error.URLError:
-			print("\nCONNECTIION ERROR:There may be a connection problem. Please check if the device is connected to the Internet")
-			sys.exit()
-
 	# extract headline
 	def extract_headline(self):
 		try:
