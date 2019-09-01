@@ -2,62 +2,66 @@ import newspaper
 import nltk
 from nltk.classify import NaiveBayesClassifier
 from nltk.classify.util import accuracy
+import urllib.request
+import sys
+
 
 class title:
-    #Initialisations
+	#Initialisations
+	def __init__(self): 
+		self.news_url=input("\nEnter The URL : ")
+		self.pos=[] #Variable to store all positive tokens from positive_headlines.csv file
+		self.neg=[] #Variable to store all negative tokens from negative_headlines.csv file
+		
+		try:
+			self.news_page=urllib.request.urlopen(self.news_url)
+		
+		except urllib.error.URLError:
+			print("\nCONNECTIION ERROR:There may be a connection problem. Please check if the device is connected to the Internet")
+			sys.exit()
 
+	# extract headline
+	def extract_headline(self):
+		try:
+			article = newspaper.Article(self.news_url)
+			article.download()
+			article.parse()
+			return article.title.strip()
+		except newspaper.article.ArticleException: #List possible errors in case of any exception
+			print("\nCONNECTION/URL ERROR: Article could not be retrieved.")
 
-    def __init__(self): 
-        self.news_url=input("\nEnter The URL : ")
-        self.pos=[] #Variable to store all positive tokens from positive_headlines.csv file
-        self.neg=[] #Variable to store all negative tokens from negative_headlines.csv file
+			
+	#Adding Training/Testing Data
+	def train(self,headline):
+		with open("positive_headlines.csv") as file:
+			for sentence in file:
+				self.pos.append([{word: True for word in nltk.word_tokenize(sentence)},'Positive'])
 
+		with open("negative_headlines.csv") as file:
+			for sentence in file:
+				self.neg.append([{word: True for word in nltk.word_tokenize(sentence)},'Negative'])
 
-    def extract_headline(self):
+		training=self.pos[:int(len(self.pos))] + self.neg[:int(len(self.neg))]
 
-        try:
-            self.article = newspaper.Article(self.news_url)
-            self.article.download()
-            self.article.parse()
-        
-        except newspaper.article.ArticleException: #List possible errors in case of any exception
-            print("\nCONNECTION/URL ERROR: There may be a problem with your connection or the URL entered may be invalid")
-            article.title = "Invalid URL/Could not extract title"
+		classifier = NaiveBayesClassifier.train(training) #Training
+		sentiment=classifier.classify({word: True for word in nltk.word_tokenize(headline)})
+		return sentiment
 
-        return self.article.title.strip()
+	# categorize headline
+	def headline_category(self,headline,sentiment):
+		print("\nHEADLINE  :",headline.upper())
+		print("SENTIMENT :",sentiment)
+		print("AUTHOR(S) :",*self.article.authors,'\n')
 
-
-    #Adding Training/Testing Data
-    def train(self,headline):
-
-        with open("positive_headlines.csv") as file:
-            for sentence in file:
-                self.pos.append([{word: True for word in nltk.word_tokenize(sentence)},'Positive'])
-
-        with open("negative_headlines.csv") as file:
-            for sentence in file:
-                self.neg.append([{word: True for word in nltk.word_tokenize(sentence)},'Negative'])
-
-        training=self.pos[:int(len(self.pos))] + self.neg[:int(len(self.neg))]
-
-        classifier = NaiveBayesClassifier.train(training) #Training
-        sentiment=classifier.classify({word: True for word in nltk.word_tokenize(headline)})
-        return sentiment
-
-
-    def headline_category(self,headline,sentiment):
-        print("\nHEADLINE  :",headline.upper())
-        print("SENTIMENT :",sentiment)
-        print("AUTHOR(S) :",*self.article.authors,'\n')
-
-
-    def main(self):
-        hdln=self.extract_headline()
-        sntmnt=self.train(hdln)
-        self.train(hdln)
-        self.headline_category(hdln,sntmnt)
-        
-        
+		
+	# main of class
+	def main(self):
+		hdln=self.extract_headline()
+		sntmnt=self.train(hdln)
+		self.train(hdln)
+		self.headline_category(hdln,sntmnt)
+		
+		
 if __name__=='__main__':
-    do_ya_thing=title()
-    do_ya_thing.main()
+	title().main()
+	
