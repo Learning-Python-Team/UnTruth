@@ -1,3 +1,4 @@
+import nltk
 import newspaper
 import re
 
