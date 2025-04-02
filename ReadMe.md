@@ -16,7 +16,7 @@ The program aims to eliminate the prevailing dominance of Fake News all around t
 
 ## Contributors 
 
-* AlphaPhiKappa
+* asiffarhankhan
 * riseandshine0
 * mphirke
 * mandjevant
